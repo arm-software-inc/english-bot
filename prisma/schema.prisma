@@ -1,0 +1,16 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource english {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model word {
+	id String @id @default(auto()) @map("_id") @english.ObjectId
+	word String
+	examples String[]
+	synonyms String[]
+	antonyms String[]
+}
