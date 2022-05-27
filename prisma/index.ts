@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
-import { Word } from '../src/models/wordEnglish';
+import { Word } from '../src/models/word.model';
 
-export default class databaseRepository {
+export default class wordRepository {
 	private _prismaClient: PrismaClient;
 
 	constructor() {

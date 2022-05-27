@@ -1,35 +1,19 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import env from 'dotenv';
-import { Client, Intents, TextChannel } from 'discord.js';
-import databaseRepository from '../prisma';
-import { Word } from './models/wordEnglish';
+import { Client, Intents } from 'discord.js';
+import wordService from './services/word.service';
 
 env.config();
+
+let prismaClient: wordService;
 
 const client = new Client({
 	intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
 	retryLimit: 2,
 });
 
-async function getAllWords(): Promise<Word[]> {
-	const prismaClient = new databaseRepository();
-	return await prismaClient.fetch();
-}
-
-async function fetchAllWords() {
-	const prismaClient = new databaseRepository();
-	return await prismaClient.fetch();
-}
-
-client.once('ready', async (client) => {
-	const words = await fetchAllWords();
-	console.log(words);
-
-	// id do canal -> word-of-the-day
-	const channel = client.channels.cache.find(
-		(channel) => channel.id === '979531669889503302'
-	);
-	(<TextChannel>channel).send(`All right man what you need an`);
+client.once('ready', async () => {
+	prismaClient = new wordService();
 });
 
 client.on('messageCreate', async (msg) => {
@@ -37,8 +21,24 @@ client.on('messageCreate', async (msg) => {
 
 	if (!msg.content.startsWith(process.env.PREFIX!)) return;
 
-	if (msg.content.startsWith(process.env.PREFIX! + 'url')) {
+	// id do canal -> word-of-the-day
+	const channel = client.channels.cache.find(
+		(channel) => channel.id === '979531669889503302'
+	);
+
+	if (msg.channel !== channel) {
+		msg.channel.send("You're dumb man, shut up! This is the wrong channel.");
+		return;
+	}
+
+	if (msg.content.startsWith(process.env.PREFIX! + 'word')) {
 		msg.channel.send('oi');
+	}
+
+	if (msg.content.startsWith(process.env.PREFIX! + 'all')) {
+		msg.channel.send('fetching all...');
+		const words = await prismaClient.fetchAll();
+		msg.channel.send(JSON.stringify(words));
 	}
 });
 
