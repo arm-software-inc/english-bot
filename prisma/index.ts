@@ -6,22 +6,23 @@ export default class databaseRepository {
 
 	constructor() {
 		this._prismaClient = new PrismaClient();
+		this._prismaClient.$connect();
 	}
 
 	async create(model: Word): Promise<void> {
-		await this._prismaClient.word.create({
+		await this._prismaClient.words.create({
 			data: model,
 		});
 	}
 
 	async update(model: Word): Promise<void> {
-		await this._prismaClient.word.update({
+		await this._prismaClient.words.update({
 			where: { id: model.id },
 			data: model,
 		});
 	}
 	async fetch(): Promise<Word[]> {
-		return await this._prismaClient.word.findMany();
+		return await this._prismaClient.words.findMany();
 	}
 
 	// async fetchByWord(word: string): Promise<WordEnglish | null> {

@@ -16,21 +16,14 @@ async function getAllWords(): Promise<Word[]> {
 	return await prismaClient.fetch();
 }
 
-async function createWord() {
+async function fetchAllWords() {
 	const prismaClient = new databaseRepository();
-	await prismaClient.create({
-		antonyms: [],
-		examples: [],
-		synonyms: [],
-		word: 'apple',
-	});
+	return await prismaClient.fetch();
 }
 
 client.once('ready', async (client) => {
-	// const words = await getAllWords();
-	// console.log(words);
-
-	await createWord();
+	const words = await fetchAllWords();
+	console.log(words);
 
 	// id do canal -> word-of-the-day
 	const channel = client.channels.cache.find(
